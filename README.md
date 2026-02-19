@@ -1,5 +1,7 @@
 # Python System Monitor (Dockerized) 
 
+[![Docker CI](https://github.com/VladyslavKorniichuk/python-system-monitor-docker/actions/workflows/ci.yml/badge.svg)](https://github.com/VladyslavKorniichuk/python-system-monitor-docker/actions/workflows/ci.yml)
+
 A simple application for monitoring system parameters, running inside a Docker container. This is an educational project created to learn the basics of containerization.
 
 ## 🚀 Technologies
