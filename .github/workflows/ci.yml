@@ -1,0 +1,26 @@
+name: Docker CI
+
+# 1. Kiedy ma się uruchomić ten potok? 
+# Odp: Za każdym razem, gdy wyślesz kod (push) na główną gałąź (main).
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Build the Docker image
+      run: docker build -t system-monitor:test .
+      
+    - name: Test the Docker container
+      run: |
+        docker run -d --name test-container system-monitor:test
+        sleep 5
+        docker logs test-container
