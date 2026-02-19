@@ -1,7 +1,5 @@
 name: Docker CI
 
-# 1. Kiedy ma się uruchomić ten potok? 
-# Odp: Za każdym razem, gdy wyślesz kod (push) na główną gałąź (main).
 on:
   push:
     branches: [ "main" ]
@@ -16,11 +14,23 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+        
+    - name: Install Linter
+      run: pip install flake8
+      
+    - name: Lint code with flake8
+      run: |
+        flake8 app.py --count --ignore=E501 --show-source --statistics
+
     - name: Build the Docker image
       run: docker build -t system-monitor:test .
       
-    - name: Test the Docker container
+    - name: Test the container
       run: |
-        docker run -d --name test-container system-monitor:test
+        docker run -d -p 8000:8000 --name test-container system-monitor:test
         sleep 5
-        docker logs test-container
+        curl http://localhost:8000 || exit 1

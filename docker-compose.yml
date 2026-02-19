@@ -1,0 +1,7 @@
+services:
+  api-monitor:
+    build: .
+    container_name: python-sys-monitor
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
