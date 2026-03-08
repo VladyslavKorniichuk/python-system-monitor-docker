@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Monitor</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <h1>System Monitor</h1>
+        <hr class="separator">
+        <p style="text-align:center; font-size: 0.9em; color: #a6adc8;">
+            Updates every 2 seconds <span id="status-icon" style="color: #89b4fa;">● Live</span>
+        </p>
+        <hr class="separator">
+        <div class="metric"><span class="label">ОС:</span> <span id="os-value">{os} {release}</span></div>
+        <div class="metric"><span class="label">CPU:</span> <span id="cpu-value">{cpu}%</span></div>
+        <div class="metric"><span class="label">RAM:</span> <span id="ram-value">{ram}% ({ram_mb} MB)</span></div>
+        <div class="metric"><span class="label">Disk:</span> <span id="disk-value">{disk}%</span></div>
+    </div>
+
+    <script>
+        function updateMetrics() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('cpu-value').textContent = data.metrics.cpu_percent + '%';
+                    document.getElementById('ram-value').textContent = 
+                        data.metrics.ram_percent + '% (' + data.metrics.ram_mb + ' MB)';
+                    document.getElementById('disk-value').textContent = data.metrics.disk_percent + '%';
+                })
+                .catch(error => {
+                    console.error('Помилка оновлення метрик:', error);
+                    document.getElementById('status-icon').textContent = '● Помилка';
+                    document.getElementById('status-icon').style.color = '#f38ba8';
+                });
+        }
+
+        setInterval(updateMetrics, 2000);
+
+        updateMetrics();
+    </script>
+</body>
+</html>
