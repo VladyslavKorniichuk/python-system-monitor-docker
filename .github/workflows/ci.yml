@@ -1,4 +1,4 @@
-name: Docker CI
+name: Docker CI/CD
 
 on:
   push:
@@ -7,31 +7,55 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
+    
+    # Grant permissions for the workflow to read repository contents and write packages
+    permissions:
+      contents: read
+      packages: write
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.13'
+      
+      # Install Ruff for linting
+    - name: Install Ruff
+      run: pip install ruff
         
-    - name: Install Linter
-      run: pip install flake8
-      
-    - name: Lint code with flake8
-      run: |
-        flake8 app.py --count --ignore=E501 --show-source --statistics
+    - name: Lint code (Find bugs, ignore style!)
+      run: ruff check app.py --select F --output-format=github
 
-    - name: Build the Docker image
-      run: docker build -t system-monitor:test .
-      
-    - name: Test the container
+    - name: Test the container locally
       run: |
+        docker build -t system-monitor:test .
         docker run -d -p 8000:8000 --name test-container system-monitor:test
         sleep 5
         curl http://localhost:8000 || exit 1
+
+    # --- CD ---
+
+    - name: Log in to GitHub Container Registry
+      if: github.event_name != 'pull_request'
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      if: github.event_name != 'pull_request'
+      run: |
+        # Convert repository name to lowercase for Docker image naming
+        IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
         
+        # Build the Docker image
+        docker build -t $IMAGE_NAME:latest .
+
+        # Push the Docker image to GitHub Container Registry
+        docker push $IMAGE_NAME:latest
