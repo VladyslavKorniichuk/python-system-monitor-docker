@@ -31,8 +31,8 @@
                     document.getElementById('disk-value').textContent = data.metrics.disk_percent + '%';
                 })
                 .catch(error => {
-                    console.error('Помилка оновлення метрик:', error);
-                    document.getElementById('status-icon').textContent = '● Помилка';
+                    console.error('Error updating metrics:', error);
+                    document.getElementById('status-icon').textContent = '● Error';
                     document.getElementById('status-icon').style.color = '#f38ba8';
                 });
         }
