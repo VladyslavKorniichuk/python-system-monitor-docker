@@ -11,6 +11,11 @@ COPY app.py .
 COPY templates/ templates/
 COPY static/ static/
 
+# Create a non-root user to run the application
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+RUN chown -R appuser:appgroup /app
+USER appuser
+
 EXPOSE 8000
 
 # Add Healthcheck
