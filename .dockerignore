@@ -1,0 +1,8 @@
+.git
+.gitignore
+.github/
+terraform/
+__pycache__/
+*.pyc
+*.pyo
+README.md
