@@ -5,6 +5,11 @@ services:
     ports:
       - "8000:8000" 
     restart: unless-stopped
+
+    # Environment variables for the application
+    environment:
+      - PORT=8000
+      - PYTHONUNBUFFERED=1
     
     # Resource limits and reservations
     deploy:

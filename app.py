@@ -1,6 +1,7 @@
 import json
 import platform
 import psutil
+import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 
@@ -17,26 +18,26 @@ class MonitorHandler(BaseHTTPRequestHandler):
 
     def serve_html(self):
         self.send_response(200)
-        self.send_header('Content-type', 'text/html; charset=utf-8')
+        self.send_header("Content-type", "text/html; charset=utf-8")
         self.end_headers()
 
         metrics = self.get_system_metrics()
 
-        with open('templates/index.html', 'r', encoding='utf-8') as f:
+        with open("templates/index.html", "r", encoding="utf-8") as f:
             html_content = f.read()
-        
-        html_content = html_content.replace('{os}', platform.system())
-        html_content = html_content.replace('{release}', platform.release())
-        html_content = html_content.replace('{cpu}', str(metrics['cpu_percent']))
-        html_content = html_content.replace('{ram}', str(metrics['ram_percent']))
-        html_content = html_content.replace('{ram_mb}', str(metrics['ram_mb']))
-        html_content = html_content.replace('{disk}', str(metrics['disk_percent']))
-        html_content = html_content.replace('{uptime}', metrics['uptime'])
-        html_content = html_content.replace('{net_sent}', str(metrics['net_sent_mb']))
-        html_content = html_content.replace('{net_recv}', str(metrics['net_recv_mb']))
-        html_content = html_content.replace('{processes}', str(metrics['processes']))
-        
-        self.wfile.write(html_content.encode('utf-8'))
+
+        html_content = html_content.replace("{os}", platform.system())
+        html_content = html_content.replace("{release}", platform.release())
+        html_content = html_content.replace("{cpu}", str(metrics["cpu_percent"]))
+        html_content = html_content.replace("{ram}", str(metrics["ram_percent"]))
+        html_content = html_content.replace("{ram_mb}", str(metrics["ram_mb"]))
+        html_content = html_content.replace("{disk}", str(metrics["disk_percent"]))
+        html_content = html_content.replace("{uptime}", metrics["uptime"])
+        html_content = html_content.replace("{net_sent}", str(metrics["net_sent_mb"]))
+        html_content = html_content.replace("{net_recv}", str(metrics["net_recv_mb"]))
+        html_content = html_content.replace("{processes}", str(metrics["processes"]))
+
+        self.wfile.write(html_content.encode("utf-8"))
 
     # Serve JSON data for AJAX requests
     def serve_json_data(self):
@@ -69,10 +70,10 @@ class MonitorHandler(BaseHTTPRequestHandler):
 
         cpu_usage = psutil.cpu_percent(interval=0.1)
         ram = psutil.virtual_memory()
-        disk = psutil.disk_usage('/')
+        disk = psutil.disk_usage("/")
 
         uptime_seconds = int(time.time() - psutil.boot_time())
-        uptime_str = str(timedelta(seconds=uptime_seconds)) 
+        uptime_str = str(timedelta(seconds=uptime_seconds))
 
         net_io = psutil.net_io_counters()
         net_sent_mb = round(net_io.bytes_sent / (1024 * 1024), 2)
@@ -88,12 +89,14 @@ class MonitorHandler(BaseHTTPRequestHandler):
             "uptime": uptime_str,
             "net_sent_mb": net_sent_mb,
             "net_recv_mb": net_recv_mb,
-            "processes": processes_count
+            "processes": processes_count,
         }
 
 
 if __name__ == "__main__":
-    server_address = ("", 8000)
+    port = int(os.environ.get("PORT", 8000))
+    server_address = ("", port)
+
     httpd = HTTPServer(server_address, MonitorHandler)
-    print("HTTP server runs on port 8000...")
+    print(f"HTTP server runs on port {port}...")
     httpd.serve_forever()
