@@ -27,3 +27,12 @@ services:
       options:
         max-size: "10m"      
         max-file: "3"
+
+  # Watchtower service for automatic updates
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 60 python-sys-monitor
