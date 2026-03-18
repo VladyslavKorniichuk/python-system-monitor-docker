@@ -6,19 +6,22 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
-A lightweight, containerized Python application that monitors real-time system metrics (CPU, RAM, Disk usage) and displays them via a live-updating Web UI. Built as an educational project to learn Docker, CI/CD pipelines, and web development basics.
+A lightweight, containerized Python application that monitors real-time system metrics (CPU, RAM, Disk, Network I/O, Uptime) and displays them via a live-updating Web UI. Built as an educational project to learn Docker, CI/CD pipelines, Infrastructure as Code, and web development basics.
 
 ## 🌟 Features
-* **Live Dashboard**: A dark-themed web UI that updates metrics automatically every 2 seconds via JavaScript.
+* **Live Dashboard**: A dark-themed web UI that updates metrics automatically every 2 seconds via JavaScript Fetch API.
 * **REST API**: Serves raw system metrics in JSON format via the `/data` endpoint.
-* **Continuous Deployment**: Automated builds pushed to GitHub Container Registry (GHCR) using GitHub Actions.
-* **Optimized & Secure**: Uses a minimal `python:3.13-slim` base image and includes a built-in Docker `HEALTHCHECK`.
+* **Production-Ready Docker**: Utilizes multi-stage builds, runs as a non-root user for security, and includes a built-in `HEALTHCHECK`.
+* **CI/CD Pipeline**: Automated code linting (Ruff) and image builds pushed to GitHub Container Registry (GHCR) using GitHub Actions.
+* **Full Continuous Deployment**: Integrated `Watchtower` in `docker-compose.yml` for zero-downtime automated container updates.
+* **Infrastructure as Code (IaC)**: Includes `Terraform` configuration to automatically provision AWS EC2 instances and deploy the container.
 
 ## 🚀 Technologies
 * **Python 3.13** (with `psutil` for hardware metrics)
 * **HTML / CSS / Vanilla JS** (Frontend)
-* **Docker & Docker Compose** (Containerization)
+* **Docker & Docker Compose** (Containerization & Orchestration)
 * **GitHub Actions** (CI/CD Pipeline)
+* **Terraform** (AWS Infrastructure Provisioning)
 * **Ruff** (Lightning-fast Python linter)
 
 ## 📋 Prerequisites
